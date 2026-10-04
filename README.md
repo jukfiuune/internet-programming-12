@@ -24,7 +24,7 @@ python backend/manage.py loaddata questions/question_bank.json
 ### Tests
 
 ```bash
-python backend/manage.py test accounts questions
+python backend/manage.py test accounts questions games
 ```
 
 ## Frontend
