@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Game, GamePlayer, Round, RoundAnswer
+from .models import Game, GamePlayer, Round, RoundAnswer, WaitingRoomEntry
 
 
 class GamePlayerInline(admin.TabularInline):
@@ -33,7 +33,7 @@ class GameAdmin(admin.ModelAdmin):
 
 @admin.register(GamePlayer)
 class GamePlayerAdmin(admin.ModelAdmin):
-    list_display = ("user", "game", "player_order", "score", "is_active", "joined_at")
+    list_display = ("user", "game", "player_order", "color", "score", "is_active", "joined_at")
     list_filter = ("is_active", "game__status")
     search_fields = ("user__username",)
     list_select_related = ("user", "game")
@@ -53,3 +53,11 @@ class RoundAnswerAdmin(admin.ModelAdmin):
     list_display = ("round", "player", "selected_option", "numeric_value", "is_correct", "points_awarded", "submitted_at")
     list_filter = ("is_correct", "round__question_type")
     list_select_related = ("round", "player__user", "selected_option")
+
+
+@admin.register(WaitingRoomEntry)
+class WaitingRoomEntryAdmin(admin.ModelAdmin):
+    list_display = ("user", "created_at")
+    search_fields = ("user__username",)
+    list_select_related = ("user",)
+    autocomplete_fields = ("user",)

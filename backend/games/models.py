@@ -44,6 +44,18 @@ class Game(models.Model):
 
 
 class GamePlayer(models.Model):
+    RED = "red"
+    BLUE = "blue"
+    GREEN = "green"
+    YELLOW = "yellow"
+
+    COLOR_CHOICES = [
+        (RED, "Red"),
+        (BLUE, "Blue"),
+        (GREEN, "Green"),
+        (YELLOW, "Yellow"),
+    ]
+
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name="players")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -51,6 +63,7 @@ class GamePlayer(models.Model):
         related_name="game_players",
     )
     player_order = models.PositiveSmallIntegerField()
+    color = models.CharField(max_length=10, choices=COLOR_CHOICES, null=True, blank=True)
     score = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     joined_at = models.DateTimeField(auto_now_add=True)
@@ -60,10 +73,27 @@ class GamePlayer(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["game", "user"], name="unique_game_user"),
             models.UniqueConstraint(fields=["game", "player_order"], name="unique_game_player_order"),
+            models.UniqueConstraint(fields=["game", "color"], name="unique_game_color"),
         ]
 
     def __str__(self):
         return f"{self.user} in game #{self.game_id}"
+
+
+class WaitingRoomEntry(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="waiting_room_entry",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["created_at", "id"]
+        verbose_name_plural = "waiting room entries"
+
+    def __str__(self):
+        return f"{self.user} waiting since {self.created_at}"
 
 
 class Round(models.Model):
